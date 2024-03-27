@@ -1,11 +1,12 @@
-document.getElementById('searchBtn').addEventListener('click', function() {
-    const query = document.getElementById('searchQuery').value;
+document.getElementById('searchQuery').addEventListener('input', function(e) {
+    const query = e.target.value;
     if (query.length >= 3) {
-        searchBooks(query);
+        searchBooks(query); // Trigger search with at least 3 characters
     }
 });
 
-const selectedBooks = [];
+// Array to store the IDs of selected books
+let selectedBooks = [];
 
 function searchBooks(query) {
     const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`;
@@ -20,57 +21,63 @@ function searchBooks(query) {
 
 function displaySearchResults(books) {
     const resultsContainer = document.getElementById('searchResults');
-    resultsContainer.innerHTML = '';
+    resultsContainer.innerHTML = ''; // Clear previous results
 
-    books.forEach((book, index) => {
+    books.forEach(book => {
         const bookDiv = document.createElement('div');
-        const checkBox = document.createElement('input');
-        checkBox.type = 'checkbox';
-        checkBox.id = 'book' + index;
-        checkBox.dataset.bookId = book.id; // Store book ID in dataset for later retrieval
-        bookDiv.appendChild(checkBox);
-
-        const label = document.createElement('label');
-        label.htmlFor = 'book' + index;
-        label.textContent = book.volumeInfo.title;
-        bookDiv.appendChild(label);
-
+        bookDiv.textContent = book.volumeInfo.title;
+        bookDiv.style.cursor = 'pointer';
+        bookDiv.addEventListener('click', () => selectBook(book));
         resultsContainer.appendChild(bookDiv);
     });
 }
 
-document.getElementById('searchBtn').addEventListener('click', () => {
+function selectBook(book) {
+    // Prevent adding more than 5 books and duplicate selections
+    if (!selectedBooks.some(selectedBook => selectedBook.id === book.id) && selectedBooks.length < 5) {
+        selectedBooks.push(book);
+        updateSelectedBooksDisplay();
+    } else {
+        alert('You can select up to 5 unique books.');
+    }
+}
+
+function updateSelectedBooksDisplay() {
     const selectedBooksContainer = document.getElementById('selectedBooks');
     selectedBooksContainer.innerHTML = ''; // Clear previous display
-    
-    document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
-        const bookId = checkbox.dataset.bookId;
-        fetch(`https://www.googleapis.com/books/v1/volumes/${bookId}`)
-            .then(response => response.json())
-            .then(book => {
-                const bookDiv = document.createElement('div');
-                const title = document.createElement('p');
-                title.textContent = 'Title: ' + book.volumeInfo.title;
-                bookDiv.appendChild(title);
 
-                const author = document.createElement('p');
-                author.textContent = 'Author: ' + book.volumeInfo.authors.join(', ');
-                bookDiv.appendChild(author);
+    selectedBooks.forEach(book => {
+        const bookDiv = document.createElement('div');
+        
+        const title = document.createElement('p');
+        title.textContent = 'Title: ' + book.volumeInfo.title;
+        bookDiv.appendChild(title);
 
-                const rating = document.createElement('p');
-                rating.textContent = 'Rating: ' + book.volumeInfo.averageRating;
-                bookDiv.appendChild(rating);
+        const author = document.createElement('p');
+        author.textContent = 'Author: ' + (book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'N/A');
+        bookDiv.appendChild(author);
 
-                if (book.volumeInfo.imageLinks && book.volumeInfo.imageLinks.thumbnail) {
-                    const img = document.createElement('img');
-                    img.src = book.volumeInfo.imageLinks.thumbnail;
-                    img.alt = 'Book cover';
-                    bookDiv.appendChild(img);
-                }
+        const rating = document.createElement('p');
+        rating.textContent = 'Rating: ' + (book.volumeInfo.averageRating || 'N/A');
+        bookDiv.appendChild(rating);
 
-                selectedBooksContainer.appendChild(bookDiv);
-            })
-            .catch(error => console.error('Error fetching book details:', error));
+        if (book.volumeInfo.imageLinks && book.volumeInfo.imageLinks.thumbnail) {
+            const img = document.createElement('img');
+            img.src = book.volumeInfo.imageLinks.thumbnail;
+            img.alt = 'Book cover';
+            bookDiv.appendChild(img);
+        }
+
+        selectedBooksContainer.appendChild(bookDiv);
     });
-});
+}
+
+// Clear selected books list when clicking on whitespace
+document.body.addEventListener('click', function(e) {
+    if (e.target === document.body) {
+        selectedBooks = []; // Reset selected books
+        updateSelectedBooksDisplay(); // Clear display
+    }
+}, true);
+
 
