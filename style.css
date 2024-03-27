@@ -1,48 +1,36 @@
 body {
     font-family: Arial, sans-serif;
+    margin: 0;
     padding: 20px;
     display: flex;
+    justify-content: center;
 }
 
-.lists-container {
+.container {
+    display: flex;
+    width: 100%;
+}
+
+.search-area, .selected-books {
     width: 50%;
 }
 
-.search-results, .selected-books {
-    margin-top: 20px;
-    overflow-y: auto;
-    max-height: 600px; /* Adjust based on your layout */
-}
-
-.search-results div, .selected-books div {
-    font-size: 0.9rem;
+.search-results div {
     margin-bottom: 10px;
+    padding: 10px;
     background-color: #f0f0f0;
-    padding: 5px;
+    cursor: pointer;
 }
 
 .selected-books div {
     display: flex;
     align-items: center;
-}
-
-.selected-books img {
-    width: 50px; /* Smaller image in the selected list */
-    margin-right: 10px;
-}
-
-.detailed-info {
-    width: 50%;
-    padding-left: 20px;
-}
-
-.detailed-info div {
     margin-bottom: 20px;
 }
 
-.detailed-info img {
-    width: 100px;
-    display: block;
+.selected-books img {
+    width: 80px;
+    margin-right: 20px;
 }
 
-/* Add additional styling as needed */
+/* Apply additional styling as needed */
