@@ -13,7 +13,7 @@ function searchBooks(query) {
     fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
-            displaySearchResults(data.items);
+            displaySearchResults(data.items.filter(item => Number.isInteger(item.volumeInfo.averageRating)));
         })
         .catch(error => console.error('Error:', error));
 }
@@ -24,7 +24,7 @@ function displaySearchResults(books) {
 
     books.forEach(book => {
         const bookDiv = document.createElement('div');
-        bookDiv.textContent = book.volumeInfo.title;
+        bookDiv.textContent = book.volumeInfo.title + (Number.isInteger(book.volumeInfo.averageRating) ? ` (Rating: ${book.volumeInfo.averageRating})` : '');
         bookDiv.style.cursor = 'pointer';
         bookDiv.addEventListener('click', () => {
             selectBook(book);
@@ -44,18 +44,12 @@ function selectBook(book) {
 }
 
 function updateSelectedBooksDisplay() {
-    const selectedBooksContainer = document.getElementById('selectedBooks');
+    const selectedBooksContainer = document.querySelector('.detailed-info');
     selectedBooksContainer.innerHTML = ''; // Clear previous display
 
     selectedBooks.forEach(book => {
         const bookDiv = document.createElement('div');
         
-        const title = document.createElement('p');
-        title.textContent = 'Title: ' + book.volumeInfo.title;
-        bookDiv.appendChild(title);
-
-        // Additional details like author and rating can be added here as needed
-
         if (book.volumeInfo.imageLinks && book.volumeInfo.imageLinks.thumbnail) {
             const img = document.createElement('img');
             img.src = book.volumeInfo.imageLinks.thumbnail;
@@ -63,17 +57,20 @@ function updateSelectedBooksDisplay() {
             bookDiv.appendChild(img);
         }
 
+        const title = document.createElement('p');
+        title.textContent = 'Title: ' + book.volumeInfo.title;
+        bookDiv.appendChild(title);
+
+        const author = document.createElement('p');
+        author.textContent = 'Author: ' + (book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'N/A');
+        bookDiv.appendChild(author);
+
+        const rating = document.createElement('p');
+        rating.textContent = 'Rating: ' + (book.volumeInfo.averageRating || 'N/A');
+        bookDiv.appendChild(rating);
+
         selectedBooksContainer.appendChild(bookDiv);
     });
 }
-
-// Optionally, add a listener to clear the selected books if clicking on whitespace
-document.body.addEventListener('click', function(e) {
-    if (e.target === document.body) {
-        selectedBooks = [];
-        updateSelectedBooksDisplay();
-    }
-}, true);
-``
 
 
