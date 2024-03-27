@@ -3,18 +3,29 @@ body {
     padding: 20px;
 }
 
+.search-area input[type="text"] {
+    width: calc(100% - 22px); /* Adjust based on your layout */
+}
+
+.lists-container {
+    display: flex;
+    justify-content: space-between;
+}
+
 .search-results, .selected-books {
     margin-top: 20px;
+    flex-basis: 45%; /* Adjust the width as necessary */
+    padding: 10px;
 }
 
 .search-results div, .selected-books div {
+    font-size: 0.9rem; /* Smaller font for search results and selected books */
     margin-bottom: 10px;
-    padding: 10px;
     background-color: #f0f0f0;
-    cursor: pointer;
+    padding: 5px;
 }
 
 img {
-    width: 100px;
+    width: 80px; /* Adjust the image size as needed */
     margin-top: 10px;
 }
