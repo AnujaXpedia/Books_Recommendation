@@ -5,7 +5,6 @@ document.getElementById('searchQuery').addEventListener('input', function(e) {
     }
 });
 
-// Array to store the IDs of selected books
 let selectedBooks = [];
 
 function searchBooks(query) {
@@ -27,13 +26,15 @@ function displaySearchResults(books) {
         const bookDiv = document.createElement('div');
         bookDiv.textContent = book.volumeInfo.title;
         bookDiv.style.cursor = 'pointer';
-        bookDiv.addEventListener('click', () => selectBook(book));
+        bookDiv.addEventListener('click', () => {
+            selectBook(book);
+            document.getElementById('searchQuery').value = ''; // Clear search field
+        });
         resultsContainer.appendChild(bookDiv);
     });
 }
 
 function selectBook(book) {
-    // Prevent adding more than 5 books and duplicate selections
     if (!selectedBooks.some(selectedBook => selectedBook.id === book.id) && selectedBooks.length < 5) {
         selectedBooks.push(book);
         updateSelectedBooksDisplay();
@@ -53,13 +54,7 @@ function updateSelectedBooksDisplay() {
         title.textContent = 'Title: ' + book.volumeInfo.title;
         bookDiv.appendChild(title);
 
-        const author = document.createElement('p');
-        author.textContent = 'Author: ' + (book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'N/A');
-        bookDiv.appendChild(author);
-
-        const rating = document.createElement('p');
-        rating.textContent = 'Rating: ' + (book.volumeInfo.averageRating || 'N/A');
-        bookDiv.appendChild(rating);
+        // Additional details like author and rating can be added here as needed
 
         if (book.volumeInfo.imageLinks && book.volumeInfo.imageLinks.thumbnail) {
             const img = document.createElement('img');
@@ -72,12 +67,13 @@ function updateSelectedBooksDisplay() {
     });
 }
 
-// Clear selected books list when clicking on whitespace
+// Optionally, add a listener to clear the selected books if clicking on whitespace
 document.body.addEventListener('click', function(e) {
     if (e.target === document.body) {
-        selectedBooks = []; // Reset selected books
-        updateSelectedBooksDisplay(); // Clear display
+        selectedBooks = [];
+        updateSelectedBooksDisplay();
     }
 }, true);
+``
 
 
