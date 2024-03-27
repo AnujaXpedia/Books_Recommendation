@@ -1,0 +1,20 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+.search-results, .selected-books {
+    margin-top: 20px;
+}
+
+.search-results div, .selected-books div {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+img {
+    width: 100px;
+    margin-top: 10px;
+}
