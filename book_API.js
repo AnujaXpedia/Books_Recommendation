@@ -1,11 +1,13 @@
-// Function to search books using the Google Books API
-function searchBooks() {
-    const query = document.getElementById('searchQuery').value;
-    if (!query) {
-        alert('Please enter a search query.');
-        return;
+document.getElementById('searchQuery').addEventListener('input', function(e) {
+    const query = e.target.value;
+    if (query.length >= 3) {
+        searchBooks(query); // Trigger search when input length is at least 3
     }
+});
 
+const selectedBooks = new Set(); // Use a Set to store unique selections
+
+function searchBooks(query) {
     const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`;
 
     fetch(apiUrl)
@@ -14,41 +16,71 @@ function searchBooks() {
         .catch(error => console.error('Error fetching data:', error));
 }
 
-// Function to display search results
 function displaySearchResults(books) {
     const resultsContainer = document.getElementById('searchResults');
     resultsContainer.innerHTML = ''; // Clear previous results
 
     books.forEach(book => {
         const bookDiv = document.createElement('div');
-        bookDiv.textContent = book.volumeInfo.title;
-        bookDiv.style.cursor = 'pointer';
         bookDiv.onclick = () => selectBook(book);
+        
+        const title = document.createElement('p');
+        title.textContent = book.volumeInfo.title + (selectedBooks.has(book.id) ? ' (Selected)' : '');
+        bookDiv.appendChild(title);
+        
+        if (book.volumeInfo.imageLinks && book.volumeInfo.imageLinks.thumbnail) {
+            const img = document.createElement('img');
+            img.src = book.volumeInfo.imageLinks.thumbnail;
+            img.alt = 'Book cover';
+            bookDiv.appendChild(img);
+        }
+
         resultsContainer.appendChild(bookDiv);
     });
 }
 
-const selectedBooks = [];
-
-// Function to handle book selection
 function selectBook(book) {
-    if (selectedBooks.length >= 10) {
-        alert('You can select up to 10 books.');
+    if (selectedBooks.size >= 5) {
+        alert('You can select up to 5 books.');
         return;
     }
 
-    selectedBooks.push(book);
-    updateSelectedBooksDisplay();
+    if (!selectedBooks.has(book.id)) {
+        selectedBooks.add(book.id);
+        updateSelectedBooksDisplay();
+    }
 }
 
-// Function to update the display of selected books
 function updateSelectedBooksDisplay() {
     const selectedBooksContainer = document.getElementById('selectedBooks');
     selectedBooksContainer.innerHTML = ''; // Clear previous display
 
-    selectedBooks.forEach(book => {
-        const bookDiv = document.createElement('div');
-        bookDiv.textContent = book.volumeInfo.title;
-        selectedBooksContainer.appendChild(bookDiv);
+    selectedBooks.forEach(bookId => {
+        fetch(`https://www.googleapis.com/books/v1/volumes/${bookId}`)
+            .then(response => response.json())
+            .then(book => {
+                const bookDiv = document.createElement('div');
+                
+                const title = document.createElement('p');
+                title.textContent = book.volumeInfo.title;
+                bookDiv.appendChild(title);
+                
+                if (book.volumeInfo.imageLinks && book.volumeInfo.imageLinks.thumbnail) {
+                    const img = document.createElement('img');
+                    img.src = book.volumeInfo.imageLinks.thumbnail;
+                    img.alt = 'Book cover';
+                    bookDiv.appendChild(img);
+                }
+                
+                selectedBooksContainer.appendChild(bookDiv);
+            })
+            .catch(error => console.error('Error fetching detailed book data:', error));
     });
 }
+
+document.getElementById('displayInfo').addEventListener('click', () => {
+    // This button's click handler is already implicitly implemented
+    // by the updateSelectedBooksDisplay function. If you need to
+    // perform additional actions on this event, you can add them here.
+});
+
