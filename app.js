@@ -65,6 +65,51 @@ function showBookDetails(book) {
         detailsContainer.appendChild(genre);
     }
 
+    // PDF Availability
+    if (book.accessInfo.pdf.isAvailable) {
+        const pdf = document.createElement('p');
+        pdf.textContent = 'PDF Available: Yes';
+        if (book.accessInfo.pdf.downloadLink) {
+            const pdfLink = document.createElement('a');
+            pdfLink.href = book.accessInfo.pdf.downloadLink;
+            pdfLink.textContent = '(Download Link)';
+            pdf.appendChild(pdfLink);
+        }
+        detailsContainer.appendChild(pdf);
+    } else {
+        const pdf = document.createElement('p');
+        pdf.textContent = 'PDF Available: No';
+        detailsContainer.appendChild(pdf);
+    }
+
+    // EPUB Availability
+    if (book.accessInfo.epub.isAvailable) {
+        const epub = document.createElement('p');
+        epub.textContent = 'EPUB Available: Yes';
+        if (book.accessInfo.epub.downloadLink) {
+            const epubLink = document.createElement('a');
+            epubLink.href = book.accessInfo.epub.downloadLink;
+            epubLink.textContent = '(Download Link)';
+            epub.appendChild(epubLink);
+        }
+        detailsContainer.appendChild(epub);
+    } else {
+        const epub = document.createElement('p');
+        epub.textContent = 'EPUB Available: No';
+        detailsContainer.appendChild(epub);
+    }
+
+    // Sale Info
+    if (book.saleInfo.saleability === 'FOR_SALE') {
+        const saleInfo = document.createElement('p');
+        saleInfo.textContent = `Price: ${book.saleInfo.retailPrice.amount} ${book.saleInfo.retailPrice.currencyCode}`;
+        detailsContainer.appendChild(saleInfo);
+    } else {
+        const saleInfo = document.createElement('p');
+        saleInfo.textContent = 'Not for sale';
+        detailsContainer.appendChild(saleInfo);
+    }
+
     // Append the details container to the selected book's div
     document.getElementById('selectedBooks').appendChild(detailsContainer);
 }
