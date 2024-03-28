@@ -2,12 +2,7 @@ body  {
     display: flex;
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 20px;
-    background-image: url('book.jpg'); /* Example image path */
-    background-repeat: repeat;
-    opacity: 0.5; /* Adjust for desired transparency level */
-    z-index: -1; /* Ensure the background is behind content */
-   
+    padding: 20px;   
 }
 .search-container, .favorites-container {
     width: 50%;
