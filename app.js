@@ -62,6 +62,12 @@ function updateSelectedBooks() {
         if (book.volumeInfo.imageLinks?.thumbnail) {
             const img = document.createElement('img');
             img.src = book.volumeInfo.imageLinks.thumbnail;
+              img.style.cursor = 'pointer'; // Make it obvious it's clickable
+            // When the image is clicked, open a Google search for the book's Amazon link
+            img.onclick = () => {
+                const bookTitleForSearch = encodeURIComponent(book.volumeInfo.title + " Amazon");
+                window.open(`https://www.google.com/search?q=${bookTitleForSearch}`, '_blank');
+            };
             detailDiv.appendChild(img);
         }
 
