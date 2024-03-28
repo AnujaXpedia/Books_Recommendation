@@ -5,39 +5,44 @@ body {
     padding: 20px;
 }
 
-.search-container {
-    flex: 1;
-    margin-right: 20px;
-}
-
-.favorites-container {
-    flex: 1;
+.search-container, .favorites-container {
+    width: 50%;
+    padding: 10px;
 }
 
 .results-container, .books-container {
     border: 1px solid #ddd;
     margin-top: 10px;
     padding: 10px;
-    height: 500px; /* Adjust based on your preference */
+    height: 600px;
     overflow-y: auto;
 }
 
-.book-item {
+.book-item, .book-detail {
     margin-bottom: 10px;
+    padding: 5px;
     cursor: pointer;
 }
 
 .book-detail {
     display: flex;
-    align-items: center;
-    margin-bottom: 10px;
+    align-items: start;
 }
 
 .book-detail img {
-    width: 50px;
-    margin-right: 10px;
+    margin-right: 20px;
+    width: 120px; /* Increase the size of the book cover */
+    height: auto; /* Maintain the aspect ratio */
 }
 
-.book-info {
-    margin-left: 10px;
+.book-info p, .book-links a {
+    margin: 5px 0;
+    font-size: 0.8rem; /* Decrease the font size for details */
+}
+
+.book-links a {
+    display: inline-block;
+    margin-right: 10px;
+    text-decoration: none;
+    color: blue;
 }
