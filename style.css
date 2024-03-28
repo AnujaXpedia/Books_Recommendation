@@ -9,6 +9,8 @@ body  {
 .search-container, .favorites-container {
     width: 50%;
     padding: 10px;
+    background-image: url('book.jpg'); /* Example image path */
+    background-repeat: repeat;
 }
 
 .results-container, .books-container {
