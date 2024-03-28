@@ -1,70 +1,59 @@
 let selectedBooks = [];
 
-document.getElementById('searchQuery').addEventListener('input', function(e) {
-    const query = e.target.value;
-    if (query.length >= 3) {
+document.getElementById('searchBtn').addEventListener('click', function() {
+    const query = document.getElementById('searchQuery').value;
+    if (query) {
         searchBooks(query);
-    } else {
-        clearSearchResults();
     }
 });
+
+let selectedBooks = [];
 
 function searchBooks(query) {
     fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`)
         .then(response => response.json())
         .then(data => {
             displaySearchResults(data.items || []);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            clearSearchResults();
         });
 }
 
 function displaySearchResults(books) {
     const resultsContainer = document.getElementById('searchResults');
     resultsContainer.innerHTML = ''; // Clear previous results
-
     books.forEach(book => {
         const bookDiv = document.createElement('div');
         bookDiv.textContent = book.volumeInfo.title;
-        bookDiv.style.cursor = 'pointer';
-        // Directly attaching the click event listener to each bookDiv
-        bookDiv.addEventListener('click', () => selectBook(book));
+        bookDiv.addEventListener('click', () => addBookToSelected(book));
         resultsContainer.appendChild(bookDiv);
     });
 }
 
-function selectBook(book) {
-    
-    console.log("Book selected:", book);
-    if (!selectedBooks.find(b => b.id === book.id)) {
-        selectedBooks.push(book);
-        updateSelectedBooksDisplay();
-    }
+function addBookToSelected(book) {
+    // Avoid adding duplicates
+    if (selectedBooks.some(selectedBook => selectedBook.id === book.id)) return;
+    selectedBooks.push(book);
+    updateSelectedBooksDisplay();
 }
 
 function updateSelectedBooksDisplay() {
     const selectedBooksContainer = document.getElementById('selectedBooks');
-    selectedBooksContainer.innerHTML = '';
+    // Clear previous selected books except the title
+    selectedBooksContainer.querySelectorAll('div:not(h2)').forEach(div => div.remove());
 
     selectedBooks.forEach(book => {
         const bookDiv = document.createElement('div');
-        bookDiv.className = 'selected-book';
-
-        const title = document.createElement('p');
+        const title = document.createElement('span');
         title.textContent = book.volumeInfo.title;
         bookDiv.appendChild(title);
 
-        const detailsBtn = document.createElement('button');
-        detailsBtn.textContent = 'Details';
-        detailsBtn.addEventListener('click', () => showBookDetails(book));
-        bookDiv.appendChild(detailsBtn);
+        // Optionally, add the author or other details
+        const author = document.createElement('span');
+        author.textContent = ` by ${book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'Unknown author'}`;
+        bookDiv.appendChild(author);
 
         selectedBooksContainer.appendChild(bookDiv);
     });
 }
-
 function showBookDetails(book) {
     const detailsContainer = document.getElementById('selectedBooks');
     detailsContainer.innerHTML = ''; // Clearing previous details for simplicity
