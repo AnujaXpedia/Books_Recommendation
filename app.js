@@ -23,20 +23,21 @@ function searchBooks(query) {
 
 function displaySearchResults(books) {
     const resultsContainer = document.getElementById('searchResults');
-    resultsContainer.innerHTML = '';
+    resultsContainer.innerHTML = ''; // Clear previous results
 
     books.forEach(book => {
         const bookDiv = document.createElement('div');
-        bookDiv.textContent = book.volumeInfo.title || 'No title available';
-        bookDiv.className = 'search-result';
+        bookDiv.textContent = book.volumeInfo.title;
+        bookDiv.style.cursor = 'pointer';
+        // Directly attaching the click event listener to each bookDiv
+        bookDiv.addEventListener('click', () => selectBook(book));
         resultsContainer.appendChild(bookDiv);
     });
 }
 
-function clearSearchResults() {
-    document.getElementById('searchResults').innerHTML = '';
-}
 function selectBook(book) {
+    
+    console.log("Book selected:", book);
     if (!selectedBooks.find(b => b.id === book.id)) {
         selectedBooks.push(book);
         updateSelectedBooksDisplay();
