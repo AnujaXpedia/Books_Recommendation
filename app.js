@@ -1,25 +1,20 @@
-document.getElementById('searchBtn').addEventListener('click', function() {
-    const query = document.getElementById('searchQuery').value;
-    if (query) {
+document.getElementById('searchQuery').addEventListener('input', function() {
+    const query = this.value;
+    if (query.length >= 3) {
         searchBooks(query);
+    } else {
+        document.getElementById('searchResults').innerHTML = ''; // Clear results if under 3 characters
     }
 });
 
 let selectedBooks = [];
 
 function searchBooks(query) {
-    fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=10`)
+    fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=40`) // Fetch more to filter for integers
         .then(response => response.json())
         .then(data => {
-            const resultsContainer = document.getElementById('searchResults');
-            resultsContainer.innerHTML = ''; // Clear previous results
-            data.items.forEach(book => {
-                const bookDiv = document.createElement('div');
-                bookDiv.textContent = book.volumeInfo.title;
-                bookDiv.classList.add('book-item');
-                bookDiv.onclick = () => addBook(book);
-                resultsContainer.appendChild(bookDiv);
-            });
+            const filteredBooks = data.items.filter(book => Number.isInteger(book.volumeInfo.averageRating)).slice(0, 5); // Keep only books with integer ratings and limit to 5
+            displaySearchResults(filteredBooks);
         }).catch(error => console.error('Error:', error));
 }
 
@@ -38,7 +33,30 @@ function addBook(book) {
     updateSelectedBooks();
     document.getElementById('searchQuery').value = ''; // Clear the search field
 }
-
+function displaySearchResults(books) {
+    const resultsContainer = document.getElementById('searchResults');
+    resultsContainer.innerHTML = ''; // Clear previous results
+    books.forEach(book => {
+        const bookDiv = document.createElement('div');
+        bookDiv.textContent = book.volumeInfo.title;
+        bookDiv.classList.add('book-item');
+        bookDiv.onclick = () => {
+            if (selectedBooks.length >= 5) {
+                alert('You can select up to 5 books.');
+                return;
+            }
+            if (!selectedBooks.find(b => b.id === book.id)) {
+                selectedBooks.push(book);
+                updateSelectedBooks();
+                document.getElementById('searchQuery').value = ''; // Clear the search field
+                document.getElementById('searchResults').innerHTML = ''; // Clear the search results
+            } else {
+                alert('This book is already selected.');
+            }
+        };
+        resultsContainer.appendChild(bookDiv);
+    });
+}
 function updateSelectedBooks() {
     const favoriteBooksContainer = document.getElementById('favoriteBooks');
     favoriteBooksContainer.innerHTML = ''; // Clear the container
@@ -46,7 +64,7 @@ function updateSelectedBooks() {
     selectedBooks.forEach(book => {
         const detailDiv = document.createElement('div');
         detailDiv.classList.add('book-detail');
-
+        
         if (book.volumeInfo.imageLinks?.thumbnail) {
             const img = document.createElement('img');
             img.src = book.volumeInfo.imageLinks.thumbnail;
