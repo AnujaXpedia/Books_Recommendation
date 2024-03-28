@@ -1,9 +1,9 @@
-let selectedBooks = [];
-
-document.getElementById('searchBtn').addEventListener('click', function() {
-    const query = document.getElementById('searchQuery').value;
-    if (query) {
+document.getElementById('searchQuery').addEventListener('input', function() {
+    const query = this.value;
+    if (query.length > 2) { // Trigger search with at least 3 characters
         searchBooks(query);
+    } else {
+        document.getElementById('searchResults').innerHTML = ''; // Clear results if under 3 characters
     }
 });
 
@@ -13,102 +13,66 @@ function searchBooks(query) {
     fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`)
         .then(response => response.json())
         .then(data => {
-            displaySearchResults(data.items || []);
-        });
+            const resultsContainer = document.getElementById('searchResults');
+            resultsContainer.innerHTML = '';
+            data.items.forEach(book => {
+                const div = document.createElement('div');
+                div.textContent = book.volumeInfo.title;
+                div.classList.add('book-item');
+                div.onclick = () => addBook(book);
+                resultsContainer.appendChild(div);
+            });
+        }).catch(error => console.error('Error:', error));
 }
 
-function displaySearchResults(books) {
-    const resultsContainer = document.getElementById('searchResults');
-    resultsContainer.innerHTML = ''; // Clear previous results
-    books.forEach(book => {
-        const bookDiv = document.createElement('div');
-        bookDiv.textContent = book.volumeInfo.title;
-        bookDiv.addEventListener('click', () => addBookToSelected(book));
-        resultsContainer.appendChild(bookDiv);
-    });
-}
+function addBook(book) {
+    if (selectedBooks.length >= 5) {
+        alert('You can select up to 5 books.');
+        return;
+    }
 
-function addBookToSelected(book) {
-    // Avoid adding duplicates
-    if (selectedBooks.some(selectedBook => selectedBook.id === book.id)) return;
+    if (selectedBooks.find(b => b.id === book.id)) {
+        alert('This book is already added.');
+        return;
+    }
+
     selectedBooks.push(book);
-    updateSelectedBooksDisplay();
+    updateSelectedBooks();
+    document.getElementById('searchQuery').value = ''; // Clear search query
+    document.getElementById('searchResults').innerHTML = ''; // Clear search results
 }
 
-function updateSelectedBooksDisplay() {
-    const selectedBooksContainer = document.getElementById('selectedBooks');
-    // Clear previous selected books except the title
-    selectedBooksContainer.querySelectorAll('div:not(h2)').forEach(div => div.remove());
-
+function updateSelectedBooks() {
+    const favoriteBooksContainer = document.getElementById('favoriteBooks');
+    favoriteBooksContainer.innerHTML = '';
     selectedBooks.forEach(book => {
-        const bookDiv = document.createElement('div');
-        const title = document.createElement('span');
-        title.textContent = book.volumeInfo.title;
-        bookDiv.appendChild(title);
+        const div = document.createElement('div');
+        div.classList.add('book-detail');
+        
+        if (book.volumeInfo.imageLinks && book.volumeInfo.imageLinks.smallThumbnail) {
+            const img = document.createElement('img');
+            img.src = book.volumeInfo.imageLinks.smallThumbnail;
+            div.appendChild(img);
+        }
 
-        // Optionally, add the author or other details
-        const author = document.createElement('span');
-        author.textContent = ` by ${book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'Unknown author'}`;
-        bookDiv.appendChild(author);
+        const infoDiv = document.createElement('div');
+        infoDiv.classList.add('book-info');
 
-        selectedBooksContainer.appendChild(bookDiv);
+        const title = document.createElement('p');
+        title.textContent = `Title: ${book.volumeInfo.title}`;
+        infoDiv.appendChild(title);
+
+        const author = document.createElement('p');
+        author.textContent = `Author: ${book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'N/A'}`;
+        infoDiv.appendChild(author);
+
+        const rating = document.createElement('p');
+        rating.textContent = `Rating: ${book.volumeInfo.averageRating || 'N/A'}`;
+        infoDiv.appendChild(rating);
+
+        // Add more details as needed here
+
+        div.appendChild(infoDiv);
+        favoriteBooksContainer.appendChild(div);
     });
 }
-function showBookDetails(book) {
-    const detailsContainer = document.getElementById('selectedBooks');
-    detailsContainer.innerHTML = ''; // Clearing previous details for simplicity
-
-    // Dynamically create and append details
-    const detailDiv = createDetailDiv(book);
-    detailsContainer.appendChild(detailDiv);
-}
-
-function createDetailDiv(book) {
-    const detailDiv = document.createElement('div');
-    detailDiv.className = 'book-details';
-
-    if (book.volumeInfo.imageLinks && book.volumeInfo.imageLinks.thumbnail) {
-        const img = document.createElement('img');
-        img.src = book.volumeInfo.imageLinks.thumbnail;
-        detailDiv.appendChild(img);
-    }
-
-    addDetail(detailDiv, 'Title', book.volumeInfo.title);
-    addDetail(detailDiv, 'Authors', book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'Unknown');
-    addDetail(detailDiv, 'Published Year', book.volumeInfo.publishedDate ? book.volumeInfo.publishedDate.split('-')[0] : 'Unknown');
-    addDetail(detailDiv, 'Rating', book.volumeInfo.averageRating || 'No rating');
-    addDetail(detailDiv, 'Genre', book.volumeInfo.categories ? book.volumeInfo.categories.join(', ') : 'Unknown');
-    if (book.accessInfo.pdf.isAvailable) {
-        addDetail(detailDiv, 'PDF Available', 'Yes', book.accessInfo.pdf.downloadLink);
-    } else {
-        addDetail(detailDiv, 'PDF Available', 'No');
-    }
-    if (book.accessInfo.epub.isAvailable) {
-        addDetail(detailDiv, 'EPUB Available', 'Yes', book.accessInfo.epub.downloadLink);
-    } else {
-        addDetail(detailDiv, 'EPUB Available', 'No');
-    }
-    if (book.saleInfo.saleability === 'FOR_SALE') {
-        addDetail(detailDiv, 'Price', `${book.saleInfo.retailPrice.amount} ${book.saleInfo.retailPrice.currencyCode}`);
-    } else {
-        addDetail(detailDiv, 'Saleability', book.saleInfo.saleability);
-    }
-
-    return detailDiv;
-}
-
-function addDetail(parent, label, value, link) {
-    const p = document.createElement('p');
-    p.textContent = `${label}: `;
-    if (link) {
-        const a = document.createElement('a');
-        a.href = link;
-        a.textContent = value;
-        a.target = "_blank";
-        p.appendChild(a);
-    } else {
-        p.textContent += value;
-    }
-    parent.appendChild(p);
-}
-
