@@ -17,25 +17,6 @@ function searchBooks(query) {
             displaySearchResults(filteredBooks);
         }).catch(error => console.error('Error:', error));
 }
-
-function addBook(book) {
-    if (selectedBooks.length >= 5) {
-        alert('You can select up to 5 books.');
-        return;
-    }
-    if (!selectedBooks.find(b => b.id === book.id)) {
-        selectedBooks.push(book);
-        console.log(selectedBooks); // Log the updated array for debugging
-        updateSelectedBooks();
-    } else {
-        alert('This book is already selected.');
-    }
-}
-
-    selectedBooks.push(book);
-    updateSelectedBooks();
-    document.getElementById('searchQuery').value = ''; // Clear the search field
-}
 function displaySearchResults(books) {
     const resultsContainer = document.getElementById('searchResults');
     resultsContainer.innerHTML = ''; // Clear previous results
@@ -60,6 +41,24 @@ function displaySearchResults(books) {
         resultsContainer.appendChild(bookDiv);
     });
 }
+
+
+function addBook(book) {
+    if (selectedBooks.length >= 5) {
+        alert('You can select up to 5 books.');
+        return;
+    }
+
+    if (selectedBooks.find(b => b.id === book.id)) {
+        alert('This book is already selected.');
+        return;
+    }
+
+    selectedBooks.push(book);
+    updateSelectedBooks();
+    document.getElementById('searchQuery').value = ''; // Clear the search field
+}
+
 function updateSelectedBooks() {
     const favoriteBooksContainer = document.getElementById('favoriteBooks');
     favoriteBooksContainer.innerHTML = ''; // Clear the container
@@ -68,32 +67,18 @@ function updateSelectedBooks() {
         const detailDiv = document.createElement('div');
         detailDiv.classList.add('book-detail');
 
-        // Construct the Google search URL
-        const searchQuery = encodeURIComponent(book.volumeInfo.title);
-        const googleSearchUrl = `https://www.google.com/search?q=${searchQuery}`;
-
-        // If the book has a thumbnail image
         if (book.volumeInfo.imageLinks?.thumbnail) {
-            const imgLink = document.createElement('a');
-            imgLink.href = googleSearchUrl;
-            imgLink.target = '_blank'; // Open in a new tab
-
             const img = document.createElement('img');
             img.src = book.volumeInfo.imageLinks.thumbnail;
-
-            imgLink.appendChild(img);
-            detailDiv.appendChild(imgLink);
+            detailDiv.appendChild(img);
         }
 
-        // Book title as a clickable link
-        const titleLink = document.createElement('a');
-        titleLink.href = googleSearchUrl;
-        titleLink.target = '_blank'; // Open in a new tab
-        titleLink.textContent = book.volumeInfo.title;
-        titleLink.style.display = 'block'; // Ensure the link is block level for better clicking
-        titleLink.style.marginBottom = '10px'; // Some margin for spacing
+        const infoDiv = document.createElement('div');
+        infoDiv.classList.add('book-info');
 
-        detailDiv.appendChild(titleLink);
+        const title = document.createElement('p');
+        title.textContent = `Title: ${book.volumeInfo.title}`;
+        infoDiv.appendChild(title);
 
         const author = document.createElement('p');
         author.textContent = `Author: ${book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'N/A'}`;
