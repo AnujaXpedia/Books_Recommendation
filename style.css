@@ -1,48 +1,27 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 20px;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
+    padding: 20px;
 }
 
-.container {
-    display: flex;
-    width: 100%;
+.search-area, .selected-books {
+    width: 45%;
 }
 
-.search-area, .books-you-like {
-    flex: 1;
+#searchResults div, .selected-books div {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+.selected-books div {
+    display: flex;
+    align-items: center;
+}
+
+.selected-books img {
+    width: 50px;
     margin-right: 20px;
 }
-
-.search-results {
-    margin-top: 10px;
-    max-height: 500px;
-    overflow-y: auto;
-}
-
-#selectedBooks .selected-book {
-    background-color: #f4f4f4;
-    padding: 10px;
-    margin-bottom: 10px;
-}
-
-#selectedBooks .selected-book button {
-    margin-top: 10px;
-}
-
-.book-details {
-    border-top: 2px solid #666;
-    padding-top: 10px;
-}
-
-.book-details img {
-    max-width: 100px;
-    margin-right: 10px;
-}
-
-.book-details p {
-    margin: 5px 0;
-}
-
-/* Additional styling for responsiveness and aesthetics */
