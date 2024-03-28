@@ -2,18 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta viewport="width=device-width, initial-scale=1.0">
-    <title>Book Search App</title>
+    <title>Book Finder</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="search-area">
-        <input type="text" id="searchQuery" placeholder="Search for books...">
-        <button id="searchBtn">Search</button>
-        <div id="searchResults"></div>
+    <div class="search-container">
+        <input type="text" id="searchQuery" placeholder="Enter book title...">
+        <div id="searchResults" class="results-container"></div>
     </div>
-    <div class="selected-books" id="selectedBooks">
+    <div class="favorites-container">
         <h2>Books You Like</h2>
+        <div id="favoriteBooks" class="books-container"></div>
     </div>
     <script src="app.js"></script>
 </body>
