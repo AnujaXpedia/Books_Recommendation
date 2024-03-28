@@ -5,6 +5,8 @@ body  {
     padding: 20px;
     background-image: url('book.jpg'); /* Example image path */
     background-repeat: repeat;
+    opacity: 0.5; /* Adjust for desired transparency level */
+    z-index: -1; /* Ensure the background is behind content */
    
 }
 .search-container, .favorites-container {
