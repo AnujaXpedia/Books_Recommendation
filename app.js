@@ -23,11 +23,14 @@ function addBook(book) {
         alert('You can select up to 5 books.');
         return;
     }
-
-    if (selectedBooks.find(b => b.id === book.id)) {
+    if (!selectedBooks.find(b => b.id === book.id)) {
+        selectedBooks.push(book);
+        console.log(selectedBooks); // Log the updated array for debugging
+        updateSelectedBooks();
+    } else {
         alert('This book is already selected.');
-        return;
     }
+}
 
     selectedBooks.push(book);
     updateSelectedBooks();
