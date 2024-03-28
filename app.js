@@ -29,9 +29,6 @@ function displaySearchResults(books) {
         const bookDiv = document.createElement('div');
         bookDiv.textContent = book.volumeInfo.title || 'No title available';
         bookDiv.className = 'search-result';
-        bookDiv.addEventListener('click', () => {
-            selectBook(book);
-        });
         resultsContainer.appendChild(bookDiv);
     });
 }
@@ -39,7 +36,6 @@ function displaySearchResults(books) {
 function clearSearchResults() {
     document.getElementById('searchResults').innerHTML = '';
 }
-
 function selectBook(book) {
     if (!selectedBooks.find(b => b.id === book.id)) {
         selectedBooks.push(book);
