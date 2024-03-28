@@ -1,26 +1,24 @@
-document.getElementById('searchQuery').addEventListener('input', function() {
-    const query = this.value;
-    if (query.length > 2) { // Trigger search with at least 3 characters
+document.getElementById('searchBtn').addEventListener('click', function() {
+    const query = document.getElementById('searchQuery').value;
+    if (query) {
         searchBooks(query);
-    } else {
-        document.getElementById('searchResults').innerHTML = ''; // Clear results if under 3 characters
     }
 });
 
 let selectedBooks = [];
 
 function searchBooks(query) {
-    fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`)
+    fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=10`)
         .then(response => response.json())
         .then(data => {
             const resultsContainer = document.getElementById('searchResults');
-            resultsContainer.innerHTML = '';
+            resultsContainer.innerHTML = ''; // Clear previous results
             data.items.forEach(book => {
-                const div = document.createElement('div');
-                div.textContent = book.volumeInfo.title;
-                div.classList.add('book-item');
-                div.onclick = () => addBook(book);
-                resultsContainer.appendChild(div);
+                const bookDiv = document.createElement('div');
+                bookDiv.textContent = book.volumeInfo.title;
+                bookDiv.classList.add('book-item');
+                bookDiv.onclick = () => addBook(book);
+                resultsContainer.appendChild(bookDiv);
             });
         }).catch(error => console.error('Error:', error));
 }
@@ -32,27 +30,27 @@ function addBook(book) {
     }
 
     if (selectedBooks.find(b => b.id === book.id)) {
-        alert('This book is already added.');
+        alert('This book is already selected.');
         return;
     }
 
     selectedBooks.push(book);
     updateSelectedBooks();
-    document.getElementById('searchQuery').value = ''; // Clear search query
-    document.getElementById('searchResults').innerHTML = ''; // Clear search results
+    document.getElementById('searchQuery').value = ''; // Clear the search field
 }
 
 function updateSelectedBooks() {
     const favoriteBooksContainer = document.getElementById('favoriteBooks');
-    favoriteBooksContainer.innerHTML = '';
+    favoriteBooksContainer.innerHTML = ''; // Clear the container
+
     selectedBooks.forEach(book => {
-        const div = document.createElement('div');
-        div.classList.add('book-detail');
-        
-        if (book.volumeInfo.imageLinks && book.volumeInfo.imageLinks.smallThumbnail) {
+        const detailDiv = document.createElement('div');
+        detailDiv.classList.add('book-detail');
+
+        if (book.volumeInfo.imageLinks?.thumbnail) {
             const img = document.createElement('img');
-            img.src = book.volumeInfo.imageLinks.smallThumbnail;
-            div.appendChild(img);
+            img.src = book.volumeInfo.imageLinks.thumbnail;
+            detailDiv.appendChild(img);
         }
 
         const infoDiv = document.createElement('div');
@@ -70,9 +68,51 @@ function updateSelectedBooks() {
         rating.textContent = `Rating: ${book.volumeInfo.averageRating || 'N/A'}`;
         infoDiv.appendChild(rating);
 
-        // Add more details as needed here
+        const category = document.createElement('p');
+        category.textContent = `Categories: ${book.volumeInfo.categories ? book.volumeInfo.categories.join(', ') : 'N/A'}`;
+        infoDiv.appendChild(category);
 
-        div.appendChild(infoDiv);
-        favoriteBooksContainer.appendChild(div);
+        const description = document.createElement('p');
+        description.textContent = `Description: ${book.volumeInfo.description ? book.volumeInfo.description.substring(0, 150) + '...' : 'N/A'}`;
+        infoDiv.appendChild(description);
+
+        const linksDiv = document.createElement('div');
+        linksDiv.classList.add('book-links');
+
+        if (book.saleInfo.buyLink) {
+            const salesLink = document.createElement('a');
+            salesLink.href = book.saleInfo.buyLink;
+            salesLink.textContent = 'Buy Link';
+            salesLink.target = '_blank';
+            linksDiv.appendChild(salesLink);
+        }
+
+        if (book.accessInfo.webReaderLink) {
+            const readLink = document.createElement('a');
+            readLink.href = book.accessInfo.webReaderLink;
+            readLink.textContent = 'Read Link';
+            readLink.target = '_blank';
+            linksDiv.appendChild(readLink);
+        }
+
+        if (book.accessInfo.pdf.isAvailable) {
+            const pdfLink = document.createElement('a');
+            pdfLink.href = book.accessInfo.pdf.downloadLink;
+            pdfLink.textContent = 'PDF Link';
+            pdfLink.target = '_blank';
+            linksDiv.appendChild(pdfLink);
+        }
+
+        if (book.accessInfo.epub.isAvailable) {
+            const epubLink = document.createElement('a');
+            epubLink.href = book.accessInfo.epub.downloadLink;
+            epubLink.textContent = 'ePub Link';
+            epubLink.target = '_blank';
+            linksDiv.appendChild(epubLink);
+        }
+
+        detailDiv.appendChild(infoDiv);
+        detailDiv.appendChild(linksDiv);
+        favoriteBooksContainer.appendChild(detailDiv);
     });
 }
