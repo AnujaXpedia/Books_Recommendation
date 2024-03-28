@@ -64,19 +64,33 @@ function updateSelectedBooks() {
     selectedBooks.forEach(book => {
         const detailDiv = document.createElement('div');
         detailDiv.classList.add('book-detail');
-        
+
+        // Construct the Google search URL
+        const searchQuery = encodeURIComponent(book.volumeInfo.title);
+        const googleSearchUrl = `https://www.google.com/search?q=${searchQuery}`;
+
+        // If the book has a thumbnail image
         if (book.volumeInfo.imageLinks?.thumbnail) {
+            const imgLink = document.createElement('a');
+            imgLink.href = googleSearchUrl;
+            imgLink.target = '_blank'; // Open in a new tab
+
             const img = document.createElement('img');
             img.src = book.volumeInfo.imageLinks.thumbnail;
-            detailDiv.appendChild(img);
+
+            imgLink.appendChild(img);
+            detailDiv.appendChild(imgLink);
         }
 
-        const infoDiv = document.createElement('div');
-        infoDiv.classList.add('book-info');
+        // Book title as a clickable link
+        const titleLink = document.createElement('a');
+        titleLink.href = googleSearchUrl;
+        titleLink.target = '_blank'; // Open in a new tab
+        titleLink.textContent = book.volumeInfo.title;
+        titleLink.style.display = 'block'; // Ensure the link is block level for better clicking
+        titleLink.style.marginBottom = '10px'; // Some margin for spacing
 
-        const title = document.createElement('p');
-        title.textContent = `Title: ${book.volumeInfo.title}`;
-        infoDiv.appendChild(title);
+        detailDiv.appendChild(titleLink);
 
         const author = document.createElement('p');
         author.textContent = `Author: ${book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'N/A'}`;
