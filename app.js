@@ -1,7 +1,7 @@
 document.getElementById('searchQuery').addEventListener('input', function(e) {
     const query = e.target.value;
     if (query.length >= 3) {
-        searchBooks(query); // Trigger search with at least 3 characters
+        searchBooks(query);
     }
 });
 
@@ -13,39 +13,31 @@ function searchBooks(query) {
     fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
-            displaySearchResults(data.items.filter(item => Number.isInteger(item.volumeInfo.averageRating)));
+            displaySearchResults(data.items);
         })
         .catch(error => console.error('Error:', error));
 }
 
 function displaySearchResults(books) {
     const resultsContainer = document.getElementById('searchResults');
-    resultsContainer.innerHTML = ''; // Clear previous results
+    resultsContainer.innerHTML = '';
 
     books.forEach(book => {
         const bookDiv = document.createElement('div');
-        bookDiv.textContent = book.volumeInfo.title + (Number.isInteger(book.volumeInfo.averageRating) ? ` (Rating: ${book.volumeInfo.averageRating})` : '');
-        bookDiv.style.cursor = 'pointer';
+        bookDiv.textContent = book.volumeInfo.title;
         bookDiv.addEventListener('click', () => {
             selectBook(book);
-            document.getElementById('searchQuery').value = ''; // Clear search field
+            document.getElementById('searchQuery').value = ''; // Clear the search field
+            searchBooks(''); // Clear previous results
         });
         resultsContainer.appendChild(bookDiv);
     });
 }
 
 function selectBook(book) {
-    if (!selectedBooks.some(selectedBook => selectedBook.id === book.id) && selectedBooks.length < 5) {
-        selectedBooks.push(book);
-        updateSelectedBooksDisplay();
-    } else {
-        alert('You can select up to 5 unique books.');
-    }
-}
-
-function updateSelectedBooksDisplay() {
-    const selectedBooksContainer = document.querySelector('.detailed-info');
-    selectedBooksContainer.innerHTML = ''; // Clear previous display
+    const selectedBooksContainer = document.getElementById('selectedBooks');
+    selectedBooksContainer.innerHTML = ''; // Clear previous details
+    selectedBooks.push(book); // Add the new selection
 
     selectedBooks.forEach(book => {
         const bookDiv = document.createElement('div');
@@ -57,20 +49,26 @@ function updateSelectedBooksDisplay() {
             bookDiv.appendChild(img);
         }
 
+        const details = document.createElement('div');
+
         const title = document.createElement('p');
         title.textContent = 'Title: ' + book.volumeInfo.title;
-        bookDiv.appendChild(title);
+        details.appendChild(title);
 
-        const author = document.createElement('p');
-        author.textContent = 'Author: ' + (book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'N/A');
-        bookDiv.appendChild(author);
+        if (book.volumeInfo.authors) {
+            const author = document.createElement('p');
+            author.textContent = 'Author: ' + book.volumeInfo.authors.join(', ');
+            details.appendChild(author);
+        }
 
-        const rating = document.createElement('p');
-        rating.textContent = 'Rating: ' + (book.volumeInfo.averageRating || 'N/A');
-        bookDiv.appendChild(rating);
+        if (book.volumeInfo.averageRating) {
+            const rating = document.createElement('p');
+            rating.textContent = 'Rating: ' + book.volumeInfo.averageRating;
+            details.appendChild(rating);
+        }
 
+        bookDiv.appendChild(details);
         selectedBooksContainer.appendChild(bookDiv);
     });
 }
-
 
