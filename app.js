@@ -42,13 +42,18 @@ function addBook(book) {
         return;
     }
 
-    if (selectedBooks.find(b => b.id === book.id)) {
+    if (!selectedBooks.find(b => b.id === book.id)) {
+        selectedBooks.push(book);
+        updateSelectedBooks();
+        document.getElementById('searchQuery').value = ''; // Clear the search field
+    } else {
         alert('This book is already selected.');
-        return;
     }
 
-    selectedBooks.push(book);
-    updateSelectedBooks();
+    // Show the clear button if 5 books have been selected
+    if (selectedBooks.length === 5) {
+        document.getElementById('clearSelections').style.display = 'block';
+    }
 }
 
 function updateSelectedBooks() {
@@ -245,4 +250,14 @@ function displaySuggestions(books) {
         suggestedBooksContainer.appendChild(detailDiv);
     });
 }
+document.getElementById('clearSelections').addEventListener('click', function() {
+    // Clear the selected books array
+    selectedBooks = [];
 
+    // Clear the UI elements for selected and suggested books
+    document.getElementById('favoriteBooks').innerHTML = '';
+    document.getElementById('suggestedBooks').innerHTML = '';
+
+    // Hide the "Clear Selections" button
+    this.style.display = 'none';
+});
