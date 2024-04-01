@@ -49,11 +49,6 @@ function addBook(book) {
     } else {
         alert('This book is already selected.');
     }
-
-    // Show the clear button if 5 books have been selected
-    if (selectedBooks.length === 5) {
-        document.getElementById('clearSelections').style.display = 'block';
-    }
 }
 
 function updateSelectedBooks() {
