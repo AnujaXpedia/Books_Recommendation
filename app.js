@@ -251,13 +251,14 @@ function displaySuggestions(books) {
     });
 }
 document.getElementById('clearSelections').addEventListener('click', function() {
-    // Clear the selected books array
+    // Reset the selectedBooks array
     selectedBooks = [];
 
-    // Clear the UI elements for selected and suggested books
+    // Clear the UI components showing selected and suggested books
     document.getElementById('favoriteBooks').innerHTML = '';
-    document.getElementById('suggestedBooks').innerHTML = '';
+    document.getElementById('suggestedBooks').innerHTML = ''; // Adjust based on your actual UI element IDs
 
-    // Hide the "Clear Selections" button
-    this.style.display = 'none';
+    // Optionally, reset any other relevant UI state here, such as clearing search results or input fields
+    document.getElementById('searchQuery').value = '';
+    document.getElementById('searchResults').innerHTML = '';
 });
