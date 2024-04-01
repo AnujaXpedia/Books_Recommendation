@@ -173,6 +173,32 @@ function suggestBooks(latestBook) {
         })
         .catch(error => console.error('Error:', error));
 }
+function signIn() {
+  gapi.load('auth2', function() {
+    const auth2 = gapi.auth2.init({
+      client_id: 'YOUR_CLIENT_ID.apps.googleusercontent.com',
+      // Specify the scopes your application needs
+      scope: 'profile email'
+    });
+
+    // Sign the user in, and then retrieve their ID token
+    auth2.signIn().then(function(googleUser) {
+      const id_token = googleUser.getAuthResponse().id_token;
+      console.log("User ID Token: ", id_token);
+      // Send the token to your backend for verification and to create a user profile
+    });
+  });
+}
+function onSignIn(googleUser) {
+  var profile = googleUser.getBasicProfile();
+  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+  console.log('Name: ' + profile.getName());
+  console.log('Image URL: ' + profile.getImageUrl());
+  console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+  
+  // Here, you would typically send the ID token to your server, validate it, and create a user session
+}
+
 
 function displaySuggestions(books) {
     const suggestedBooksContainer = document.getElementById('suggestedBooks');
