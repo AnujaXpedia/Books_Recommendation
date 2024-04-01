@@ -204,6 +204,19 @@ function displaySuggestions(books) {
         const author = document.createElement('p');
         author.textContent = `Author: ${book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'N/A'}`;
         infoDiv.appendChild(author);
+        
+        const rating = document.createElement('p');
+        rating.textContent = `Rating: ${book.volumeInfo.averageRating || 'N/A'}`;
+        infoDiv.appendChild(rating);
+
+        const category = document.createElement('p');
+        category.textContent = `Categories: ${book.volumeInfo.categories ? book.volumeInfo.categories.join(', ') : 'N/A'}`;
+        infoDiv.appendChild(category);
+
+        const description = document.createElement('p');
+        description.textContent = `Description: ${book.volumeInfo.description ? book.volumeInfo.description.substring(0, 150) + '...' : 'N/A'}`;
+        infoDiv.appendChild(description);
+
 
         // PDF and ePub links if available
         const linksDiv = document.createElement('div');
