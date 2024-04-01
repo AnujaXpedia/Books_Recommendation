@@ -46,3 +46,8 @@ body  {
     text-decoration: none;
     color: blue;
 }
+.suggestions-container {
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px; /* Add space between the main content and suggestions */
+}
