@@ -65,7 +65,7 @@ function updateSelectedBooks() {
               img.style.cursor = 'pointer'; // Make it obvious it's clickable
             // When the image is clicked, open a Google search for the book's Amazon link
             img.onclick = () => {
-                const bookTitleForSearch = encodeURIComponent(book.volumeInfo.title + " Amazon");
+                const bookTitleForSearch = encodeURIComponent(book.volumeInfo.title + " buy ");
                 window.open(`https://www.google.com/search?q=${bookTitleForSearch}`, '_blank');
             };
             detailDiv.appendChild(img);
