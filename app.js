@@ -151,26 +151,28 @@ function addBook(book) {
     }
 }
 function suggestBooks(latestBook) {
+    // Combine titles from selectedBooks and suggestedBooks for deduplication
+    let existingTitles = selectedBooks.map(book => book.volumeInfo.title.toLowerCase());
+
     const author = latestBook.volumeInfo.authors ? latestBook.volumeInfo.authors[0] : null;
     if (!author) return; // Exit if the latest book has no author info
-
-    const selectedTitleWords = new Set(latestBook.volumeInfo.title.toLowerCase().match(/\w+/g));
 
     const query = `+inauthor:"${encodeURIComponent(author)}"&maxResults=40`;
     fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}`)
         .then(response => response.json())
         .then(data => {
             const filteredSuggestions = data.items.filter(book => {
-                const suggestionTitleWords = new Set(book.volumeInfo.title.toLowerCase().match(/\w+/g));
-                // Calculate the intersection of words between selected and suggested titles
-                const intersection = new Set([...selectedTitleWords].filter(word => suggestionTitleWords.has(word)));
-                // Exclude books with significant title overlap (customize logic as needed)
-                return intersection.size < Math.min(selectedTitleWords.size, suggestionTitleWords.size) / 2;
+                const bookTitleLower = book.volumeInfo.title.toLowerCase();
+                return !existingTitles.includes(bookTitleLower);
             }).slice(0, 5); // Limit to 5 suggestions after filtering
-            displaySuggestions(filteredSuggestions);
-        }).catch(error => console.error('Error:', error));
-}
 
+            // Update existingTitles to prevent future duplicates
+            filteredSuggestions.forEach(book => existingTitles.push(book.volumeInfo.title.toLowerCase()));
+
+            displaySuggestions(filteredSuggestions);
+        })
+        .catch(error => console.error('Error:', error));
+}
 
 function displaySuggestions(books) {
     const suggestedBooksContainer = document.getElementById('suggestedBooks');
