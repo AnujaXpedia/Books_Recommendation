@@ -179,11 +179,55 @@ function displaySuggestions(books) {
     books.forEach(book => {
         const detailDiv = document.createElement('div');
         detailDiv.classList.add('book-detail');
-        // Simplify the construction of the book detail view as done in updateSelectedBooks
-        // For brevity, only adding the title here
+
+        // Book cover with onclick event to search for buy link
+        if (book.volumeInfo.imageLinks?.thumbnail) {
+            const img = document.createElement('img');
+            img.src = book.volumeInfo.imageLinks.thumbnail;
+            img.style.cursor = 'pointer'; // Make it look clickable
+            img.onclick = () => {
+                const titleSearch = encodeURIComponent(book.volumeInfo.title + " buy");
+                window.open(`https://www.google.com/search?q=${titleSearch}`, '_blank');
+            };
+            detailDiv.appendChild(img);
+        }
+
+        const infoDiv = document.createElement('div');
+        infoDiv.classList.add('book-info');
+
+        // Book title
         const title = document.createElement('p');
         title.textContent = `Title: ${book.volumeInfo.title}`;
-        detailDiv.appendChild(title);
+        infoDiv.appendChild(title);
+
+        // Author name
+        const author = document.createElement('p');
+        author.textContent = `Author: ${book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'N/A'}`;
+        infoDiv.appendChild(author);
+
+        // PDF and ePub links if available
+        const linksDiv = document.createElement('div');
+        linksDiv.classList.add('book-links');
+
+        if (book.accessInfo.pdf.isAvailable) {
+            const pdfLink = document.createElement('a');
+            pdfLink.href = book.accessInfo.pdf.downloadLink || '#';
+            pdfLink.textContent = 'PDF';
+            pdfLink.target = '_blank';
+            linksDiv.appendChild(pdfLink);
+        }
+
+        if (book.accessInfo.epub.isAvailable) {
+            const epubLink = document.createElement('a');
+            epubLink.href = book.accessInfo.epub.downloadLink || '#';
+            epubLink.textContent = 'ePub';
+            epubLink.target = '_blank';
+            linksDiv.appendChild(epubLink);
+        }
+
+        detailDiv.appendChild(infoDiv);
+        detailDiv.appendChild(linksDiv);
         suggestedBooksContainer.appendChild(detailDiv);
     });
 }
+
