@@ -51,3 +51,12 @@ body  {
     padding: 10px;
     margin-top: 20px; /* Add space between the main content and suggestions */
 }
+
+#clearSelections {
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #f44336; /* Example: Red button */
+    color: white;
+    border: none;
+    cursor: pointer;
+}
