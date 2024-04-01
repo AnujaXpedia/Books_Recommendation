@@ -135,3 +135,45 @@ function updateSelectedBooks() {
         favoriteBooksContainer.appendChild(detailDiv);
     });
 }
+function addBook(book) {
+    if (selectedBooks.length >= 5) {
+        alert('You can select up to 5 books.');
+        return;
+    }
+
+    if (!selectedBooks.find(b => b.id === book.id)) {
+        selectedBooks.push(book);
+        updateSelectedBooks();
+        document.getElementById('searchQuery').value = ''; // Clear the search field
+        suggestBooks(book); // Suggest other books based on this selection
+    } else {
+        alert('This book is already selected.');
+    }
+}
+function suggestBooks(latestBook) {
+    const author = latestBook.volumeInfo.authors ? latestBook.volumeInfo.authors[0] : null;
+    if (!author) return; // Exit if the latest book has no author info
+
+    const query = `+inauthor:"${encodeURIComponent(author)}"&maxResults=5`;
+    fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}`)
+        .then(response => response.json())
+        .then(data => {
+            displaySuggestions(data.items || []);
+        }).catch(error => console.error('Error:', error));
+}
+
+function displaySuggestions(books) {
+    const suggestedBooksContainer = document.getElementById('suggestedBooks');
+    suggestedBooksContainer.innerHTML = ''; // Clear previous suggestions
+
+    books.forEach(book => {
+        const detailDiv = document.createElement('div');
+        detailDiv.classList.add('book-detail');
+        // Simplify the construction of the book detail view as done in updateSelectedBooks
+        // For brevity, only adding the title here
+        const title = document.createElement('p');
+        title.textContent = `Title: ${book.volumeInfo.title}`;
+        detailDiv.appendChild(title);
+        suggestedBooksContainer.appendChild(detailDiv);
+    });
+}
