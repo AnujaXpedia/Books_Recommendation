@@ -249,11 +249,13 @@ document.getElementById('clearSelections').addEventListener('click', function() 
     // Reset the selectedBooks array
     selectedBooks = [];
 
-    // Clear the UI components showing selected and suggested books
+    // Clear the UI components showing selected books and any other related UI elements
     document.getElementById('favoriteBooks').innerHTML = '';
-    document.getElementById('suggestedBooks').innerHTML = ''; // Adjust based on your actual UI element IDs
+    document.getElementById('suggestedBooks').innerHTML = ''; // If applicable
 
-    // Optionally, reset any other relevant UI state here, such as clearing search results or input fields
+    // Optionally, clear search input and results if necessary
     document.getElementById('searchQuery').value = '';
     document.getElementById('searchResults').innerHTML = '';
+
+    // There should NOT be any code here setting this button to display:none;
 });
