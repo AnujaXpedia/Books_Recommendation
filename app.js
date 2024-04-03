@@ -65,7 +65,7 @@ function updateSelectedBooks() {
               img.style.cursor = 'pointer'; // Make it obvious it's clickable
             // When the image is clicked, open a Google search for the book's Amazon link
             img.onclick = () => {
-                const bookTitleForSearch = encodeURIComponent(book.volumeInfo.title + " buy ");
+                const bookTitleForSearch = encodeURIComponent(book.volumeInfo.title + book.volumeInfo.authors + " buy ");
                 window.open(`https://www.google.com/search?q=${bookTitleForSearch}`, '_blank');
             };
             detailDiv.appendChild(img);
@@ -214,7 +214,7 @@ function displaySuggestions(books) {
             img.src = book.volumeInfo.imageLinks.thumbnail;
             img.style.cursor = 'pointer'; // Make it look clickable
             img.onclick = () => {
-                const titleSearch = encodeURIComponent(book.volumeInfo.title + " buy");
+                const titleSearch = encodeURIComponent(book.volumeInfo.title + book.volumeInfo.authors + " buy ");
                 window.open(`https://www.google.com/search?q=${titleSearch}`, '_blank');
             };
             detailDiv.appendChild(img);
