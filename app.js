@@ -176,7 +176,7 @@ function suggestBooks(latestBook) {
 function signIn() {
   gapi.load('auth2', function() {
     const auth2 = gapi.auth2.init({
-      client_id: 'YOUR_CLIENT_ID.apps.googleusercontent.com',
+      client_id: '961539714207-p0vkigk37l0pqlqtntetbdamt3amdc5i.apps.googleusercontent.com',
       // Specify the scopes your application needs
       scope: 'profile email'
     });
